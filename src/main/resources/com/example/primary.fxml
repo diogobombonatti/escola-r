@@ -39,6 +39,7 @@
       </GridPane>
       <Button mnemonicParsing="false" onAction="#adicionarAluno" text="Adicionar" />
       <ListView fx:id="lista" prefHeight="200.0" prefWidth="200.0" />
+      <Button mnemonicParsing="false" onAction="#atualizarTela" text="Atualizar" />
       <Button layoutX="278.0" layoutY="213.0" mnemonicParsing="false" onAction="#apagar" text="Apagar" />
       <HBox alignment="CENTER" prefHeight="44.0" prefWidth="562.0" spacing="20.0">
          <children>

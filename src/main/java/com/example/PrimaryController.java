@@ -1,5 +1,7 @@
 package com.example;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javafx.fxml.FXML;
@@ -28,7 +30,32 @@ public class PrimaryController {
             Integer.valueOf( txtRm.getText() )
         );
 
-        alunos.add(aluno);
+        final String URL = "jdbc:mysql://auth-db719.hstgr.io:3306/u553405907_fiap";
+        //final String URL = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL";
+        final String USER = "u553405907_fiap";
+        final String PASS = "u553405907_FIAP";
+
+        // conectar com o banco de dados
+        try {
+            var conexao = DriverManager.getConnection(URL, USER, PASS);
+            var sql = "INSERT INTO alunos (nome, turma, rm) VALUES (?, ?, ?) ";
+            var comando = conexao.prepareStatement(sql);
+            comando.setString(1, aluno.nome());
+            comando.setString(2, aluno.turma());
+            comando.setInt(3, aluno.rm());
+            comando.executeUpdate();
+            
+            conexao.close();
+        } catch (SQLException e) {
+            Alert mensagem = new Alert(AlertType.ERROR);
+            mensagem.setTitle("ERRO");
+            mensagem.setContentText(e.getMessage());
+            mensagem.show();
+        }
+
+        // fazer o insert
+
+        // fechar a conexao
 
         txtNome.clear();
         txtTurma.clear();
@@ -38,14 +65,38 @@ public class PrimaryController {
     }
 
     public void atualizarTela(){
-        ordenar();
         lista.getItems().clear();
 
-        //alunos.forEach(nome -> txtAlunos.appendText(nome + "\n"));
+        // abrir conexao
+        final String URL = "jdbc:mysql://auth-db719.hstgr.io:3306/u553405907_fiap";
+        //final String URL = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL";
+        final String USER = "u553405907_fiap";
+        final String PASS = "u553405907_FIAP";
 
-        for (var aluno: alunos){
-            lista.getItems().add(aluno);
+        try {
+            var conexao = DriverManager.getConnection(URL, USER, PASS);
+            //executar o select
+            var comando = conexao.createStatement();
+            var alunos = comando.executeQuery("SELECT * FROM alunos ORDER BY nome");
+            
+            //preencher o listView
+            while(alunos.next()){
+                var aluno = new Aluno(
+                    alunos.getString("nome"),
+                    alunos.getString("turma"),
+                    alunos.getInt("rm")
+                );
+                lista.getItems().add(aluno);
+            }
+
+            conexao.close();
+        } catch (SQLException e) {
+            Alert mensagem = new Alert(AlertType.ERROR);
+            mensagem.setTitle("ERRO");
+            mensagem.setContentText(e.getMessage());
+            mensagem.show();
         }
+        
     }
 
 
